@@ -7,6 +7,7 @@ class AdminController {
     private $course;
     private $semester;
     private $enrollment;
+    private $classSchedule;
 
     public function __construct() {
         session_start();
@@ -22,6 +23,7 @@ class AdminController {
         $this->course = new Course($this->db);
         $this->semester = new Semester($this->db);
         $this->enrollment = new Enrollment($this->db);
+        $this->classSchedule = new ClassSchedule($this->db);
     }
 
     public function dashboard() {
@@ -117,6 +119,29 @@ class AdminController {
         
         $semesters = $this->semester->getAllSemesters();
         include_once 'views/admin/semesters.php';
+    }
+
+    public function manageClassSchedules() {
+        if($_POST && isset($_POST['action'])) {
+            switch($_POST['action']) {
+                case 'create':
+                    $this->classSchedule->createSchedule($_POST);
+                    break;
+                case 'update':
+                    $this->classSchedule->updateSchedule($_POST['schedule_id'], $_POST);
+                    break;
+                case 'delete':
+                    $this->classSchedule->deleteSchedule($_POST['schedule_id']);
+                    break;
+            }
+            header('Location: index.php?controller=admin&action=manageClassSchedules');
+            exit();
+        }
+        
+        $schedules = $this->classSchedule->getAllSchedules();
+        $courses = $this->course->getAllCourses();
+        $semesters = $this->semester->getAllSemesters();
+        include_once 'views/admin/class_schedule.php';
     }
 }
 ?>

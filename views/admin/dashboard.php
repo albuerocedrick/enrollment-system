@@ -43,7 +43,7 @@
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow p-6 mb-8">
             <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <a href="index.php?controller=admin&action=manageDepartments" class="bg-blue-500 text-white p-4 rounded-lg text-center hover:bg-blue-600 transition">
                     <div class="text-2xl mb-2">🏢</div>
                     <div>Manage Departments</div>
@@ -59,6 +59,10 @@
                 <a href="index.php?controller=admin&action=manageSemesters" class="bg-orange-500 text-white p-4 rounded-lg text-center hover:bg-orange-600 transition">
                     <div class="text-2xl mb-2">📅</div>
                     <div>Manage Semesters</div>
+                </a>
+                <a href="index.php?controller=admin&action=manageClassSchedules" class="bg-orange-500 text-white p-4 rounded-lg text-center hover:bg-orange-600 transition">
+                    <div class="text-2xl mb-2">🕒</div>
+                    <div>Manage Class Schedules</div>
                 </a>
             </div>
         </div>
