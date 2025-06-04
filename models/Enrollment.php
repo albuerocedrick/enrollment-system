@@ -12,9 +12,8 @@ class Enrollment {
         $check_query = "SELECT * FROM {$this->table} WHERE student_id = ? AND course_id = ? AND semester_id = ? AND status = 'Active'";
         $check_stmt = $this->conn->prepare($check_query);
         $check_stmt->execute([$student_id, $course_id, $semester_id]);
-        
         if($check_stmt->rowCount() > 0) {
-            return false; // Already enrolled
+            return ['success' => false, 'error' => 'You are already enrolled in this course.'];
         }
 
         // Check capacity
@@ -26,15 +25,34 @@ class Enrollment {
         $capacity_stmt = $this->conn->prepare($capacity_query);
         $capacity_stmt->execute([$semester_id, $course_id]);
         $capacity_data = $capacity_stmt->fetch(PDO::FETCH_ASSOC);
-        
         if($capacity_data && $capacity_data['current_enrollment'] >= $capacity_data['max_capacity']) {
-            return false; // Course full
+            return ['success' => false, 'error' => 'Course is full.'];
+        }
+
+        // Check prerequisites
+        $prereq_query = "SELECT prerequisites FROM courses WHERE course_id = ?";
+        $prereq_stmt = $this->conn->prepare($prereq_query);
+        $prereq_stmt->execute([$course_id]);
+        $prerequisites = $prereq_stmt->fetch(PDO::FETCH_ASSOC)['prerequisites'];
+        if($prerequisites && !empty(trim($prerequisites))) {
+            $completed_query = "SELECT COUNT(*) as completed FROM {$this->table} e
+                               JOIN courses c ON e.course_id = c.course_id
+                               WHERE e.student_id = ? AND c.course_code = ? AND e.status = 'Completed'";
+            $completed_stmt = $this->conn->prepare($completed_query);
+            $completed_stmt->execute([$student_id, $prerequisites]);
+            if($completed_stmt->fetch(PDO::FETCH_ASSOC)['completed'] == 0) {
+                return ['success' => false, 'error' => "Prerequisite {$prerequisites} not completed."];
+            }
         }
 
         // Enroll student
-        $query = "INSERT INTO {$this->table} (student_id, course_id, semester_id, status) VALUES (?, ?, ?, 'Active')";
+        $query = "INSERT INTO {$this->table} (student_id, course_id, semester_id, status, enrollment_date) VALUES (?, ?, ?, 'Active', NOW())";
         $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$student_id, $course_id, $semester_id]);
+        if($stmt->execute([$student_id, $course_id, $semester_id])) {
+            return ['success' => true, 'message' => 'Successfully enrolled!'];
+        } else {
+            return ['success' => false, 'error' => 'Enrollment failed. Please try again.'];
+        }
     }
 
     public function getStudentEnrollments($student_id, $semester_id = null) {
