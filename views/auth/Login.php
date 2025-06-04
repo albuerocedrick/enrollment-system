@@ -45,9 +45,9 @@
 
         <div class="mt-6 text-center text-sm text-gray-600">
             <p>Don't have an account? <a href="index.php?controller=auth&action=showSignup" class="text-blue-600 hover:underline">Sign up</a></p>
-            <p class="mt-2"><strong>Demo Credentials:</strong></p>
+            <!-- <p class="mt-2"><strong>Demo Credentials:</strong></p>
             <p><strong>Admin:</strong> admin / password</p>
-            <p><strong>Student:</strong> student1 / password</p>
+            <p><strong>Student:</strong> student1 / password</p> -->
         </div>
     </div>
 </body>
